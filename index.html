@@ -385,7 +385,7 @@
                 <div class="home-content animate-in">
                     <h1>Solutions digitales</h1>
                     <p>Projet en cours</p>
-                    <button class="start-btn" @click="nextSlide">
+                    <button type="button" class="start-btn" @click="nextSlide">
                         debuter.
                     </button>
                 </div>
@@ -418,7 +418,7 @@
                         <a v-if="slide.data.url" :href="slide.data.url" target="_blank" class="btn btn-primary">
                             Voir le projet
                         </a>
-                        <button class="btn btn-secondary" @click="nextSlide">
+                        <button type="button" class="btn btn-secondary" @click="nextSlide">
                             Voir les visuels
                         </button>
                     </div>
@@ -454,7 +454,7 @@
                     </div>
                     
                     <div class="project-actions">
-                        <button class="btn btn-secondary" @click="nextSlide">
+                        <button type="button" class="btn btn-secondary" @click="nextSlide">
                             Services disponibles
                         </button>
                     </div>
@@ -479,19 +479,21 @@
 
             <!-- Navigation -->
             <div class="navigation">
-                <button class="nav-btn" @click="prevSlide" :disabled="currentSlide === 0">
+                <button type="button" class="nav-btn" @click="prevSlide" :disabled="currentSlide === 0" aria-label="Slide précédente">
                     ‹
                 </button>
                 
                 <div class="nav-dots">
                     <button v-for="(slide, index) in totalSlides" :key="index"
+                            type="button"
                             class="nav-dot"
                             :class="{ active: currentSlide === index }"
-                            @click="goToSlide(index)">
+                            @click="goToSlide(index)"
+                            :aria-label="`Aller au slide ${index + 1}`">
                     </button>
                 </div>
-                
-                <button class="nav-btn" @click="nextSlide" :disabled="currentSlide === totalSlides - 1">
+
+                <button type="button" class="nav-btn" @click="nextSlide" :disabled="currentSlide === totalSlides - 1" aria-label="Slide suivante">
                     ›
                 </button>
             </div>
