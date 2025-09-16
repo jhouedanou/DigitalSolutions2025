@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Solutions</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+        }
+
+        /* Home Slide */
+        .home-slide {
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            text-align: center;
+        }
+
+        .home-content h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #ccc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .home-content p {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            opacity: 0.8;
+            margin-bottom: 3rem;
+        }
+
+        .start-btn {
+            background: #fff;
+            color: #000;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Project Slides */
+        .project-slide {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+        }
+
+        .project-content {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .project-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .project-url {
+            display: block;
+            color: #4A90E2;
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .project-url:hover {
+            color: #6BB6FF;
+        }
+
+        .project-description {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 3rem;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #357ABD;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #444;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        /* Image Slides */
+        .image-slide {
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            padding: 0;
+        }
+
+        .image-content {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Services Slide */
+        .services-slide {
+            background: linear-gradient(135deg, #000, #1a1a1a);
+        }
+
+        .services-content {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .services-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: #4A90E2;
+            background: #222;
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-duration {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .contact-box {
+            background: #fff;
+            color: #000;
+            padding: 2rem;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .contact-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Diverse Projects */
+        .diverse-projects {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .diverse-project {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid #4A90E2;
+        }
+
+        .diverse-project h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #4A90E2;
+        }
+
+        .diverse-project p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-top: 1rem;
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .project-actions {
+                flex-direction: column;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="presentation-container">
+            <!-- Slide d'accueil -->
+            <div class="slide home-slide" :class="{ active: currentSlide === 0 }" v-show="currentSlide === 0">
+                <div class="home-content animate-in">
+                    <h1>Solutions digitales</h1>
+                    <p>Projet en cours</p>
+                    <button class="start-btn" @click="nextSlide">
+                        debuter.
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slides dynamiques générés -->
+            <div v-for="(slide, index) in allSlides" :key="`slide-${index}`"
+                 class="slide" 
+                 :class="[slide.type === 'project' ? 'project-slide' : 'image-slide', { active: currentSlide === index + 1 }]" 
+                 v-show="currentSlide === index + 1">
+                
+                <!-- Contenu projet -->
+                <div v-if="slide.type === 'project'" class="project-content animate-in">
+                    <h2 class="project-title">{{ slide.data.title }}</h2>
+                    
+                    <span class="status-badge" :style="{ 
+                        backgroundColor: slide.data.statusColor, 
+                        color: slide.data.statusTextColor || 'white' 
+                    }">
+                        {{ slide.data.status }}
+                    </span>
+                    
+                    <a v-if="slide.data.url" :href="slide.data.url" target="_blank" class="project-url">
+                        {{ slide.data.url }}
+                    </a>
+                    
+                    <p class="project-description">{{ slide.data.description }}</p>
+                    
+                    <div class="project-actions">
+                        <a v-if="slide.data.url" :href="slide.data.url" target="_blank" class="btn btn-primary">
+                            Voir le projet
+                        </a>
+                        <button class="btn btn-secondary" @click="nextSlide">
+                            Voir les visuels
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contenu image -->
+                <div v-if="slide.type === 'image'" class="image-content animate-in">
+                    <img :src="slide.data.src" :alt="slide.data.alt" class="slide-image">
+                </div>
+            </div>
+
+            <!-- Slide Projets Divers -->
+            <div class="slide project-slide" :class="{ active: currentSlide === servicesSlideIndex }" v-show="currentSlide === servicesSlideIndex">
+                <div class="project-content animate-in">
+                    <h2 class="project-title">Projets Divers</h2>
+                    
+                    <div class="diverse-projects">
+                        <div class="diverse-project">
+                            <h3>TXT Engage</h3>
+                            <a href="https://vodamedia.co.za/txtengage/" target="_blank" class="project-url">
+                                https://vodamedia.co.za/txtengage/
+                            </a>
+                            <p>Plateforme d'engagement par SMS</p>
+                        </div>
+                        
+                        <div class="diverse-project">
+                            <h3>Vote Dinor</h3>
+                            <a href="https://vote.dinorapp.com/" target="_blank" class="project-url">
+                                https://vote.dinorapp.com/
+                            </a>
+                            <p>Système de vote en ligne</p>
+                        </div>
+                    </div>
+                    
+                    <div class="project-actions">
+                        <button class="btn btn-secondary" @click="nextSlide">
+                            Services disponibles
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide des services -->
+            <div class="slide services-slide" :class="{ active: currentSlide === servicesSlideIndex + 1 }" v-show="currentSlide === servicesSlideIndex + 1">
+                <div class="services-content animate-in">
+                    <h2 class="services-title">Services Disponibles</h2>
+                    
+                    <div class="services-grid">
+                        <div v-for="service in services" :key="service.name" class="service-card">
+                            <div class="service-icon">{{ service.icon }}</div>
+                            <h3 class="service-name">{{ service.name }}</h3>
+                            <p class="service-duration">{{ service.duration }}</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="navigation">
+                <button class="nav-btn" @click="prevSlide" :disabled="currentSlide === 0">
+                    ‹
+                </button>
+                
+                <div class="nav-dots">
+                    <button v-for="(slide, index) in totalSlides" :key="index"
+                            class="nav-dot"
+                            :class="{ active: currentSlide === index }"
+                            @click="goToSlide(index)">
+                    </button>
+                </div>
+                
+                <button class="nav-btn" @click="nextSlide" :disabled="currentSlide === totalSlides - 1">
+                    ›
+                </button>
+            </div>
+
+            <!-- Compteur de slides -->
+            <div class="slide-counter">
+                {{ currentSlide + 1 }} / {{ totalSlides }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentSlide: 0,
+                    projects: [
+                        {
+                            id: 'bracongo',
+                            title: 'Bracongo Stages',
+                            status: 'Livré - En attente validation client',
+                            statusColor: '#C15F3C',
+                            url: 'https://bracongostages.bigfive.dev/',
+                            description: 'Plateforme de gestion des stages permettant le suivi des demandes de stage à la Bracongo. Solution digitale pour optimiser le processus de candidature.',
+                            visuals: ['bracongo/01.png', 'bracongo/02.png', 'bracongo/03.png', 'bracongo/04.png']
+                        },
+                        {
+                            id: 'dinor',
+                            title: 'Dinor App - Nouvelle Version',
+                            status: 'Terminé - Déploiement fin de semaine',
+                            statusColor: '#28a745',
+                            url: 'https://new.dinorapp.com/',
+                            description: 'Refonte complète avec nouveau dashboard et application mobile. Version améliorée des pronostics sportifs pour la CAN 2025.',
+                            visuals: ['dinor/01.png', 'dinor/02.png', 'dinor/03.png', 'dinor/09.png']
+                        },
+                        {
+                            id: 'avegott',
+                            title: 'Avegott',
+                            status: 'En cours - Livraison fin de mois',
+                            statusColor: '#ffc107',
+                            statusTextColor: '#000',
+                            description: 'Plateforme de reprise de téléphones d\'occasion. Solution e-commerce pour l\'achat et la vente de smartphones reconditionnés.',
+                            visuals: ['avegott/01.png', 'avegott/02.png']
+                        },
+                        {
+                            id: 'sovingab',
+                            title: 'Sovingab',
+                            status: 'Terminé. ',
+                            statusColor: '#28a745',
+                            description: 'Application de vente de vin',
+                            visuals: ['avegott/06.png', 'avegott/07.png']
+                        },
+                        {
+                            id: 'crm-friesland',
+                            title: 'CRM Friesland',
+                            status: 'En cours',
+                            statusColor: '#ffc107',
+                            statusTextColor: '#000',
+                            description: 'Refonte du CRM. Modernisation complète du système de gestion de la relation client pour optimiser les processus commerciaux.',
+                            visuals: ['friesland/Screenshot_20250916-100126.png']
+                        }
+                    ],
+                    services: [
+                        { name: 'Applications Mobiles', duration: '1-2 mois', icon: '📱' },
+                        { name: 'Landing Pages', duration: '1 semaine', icon: '🌐' },
+                        { name: 'Sites Web', duration: 'Variable', icon: '💻' },
+                        { name: 'Visites Virtuelles', duration: 'Sur mesure', icon: '🏢' },
+                        { name: 'Gestion des Serveurs', duration: '24/7', icon: '🖥️' }
+                    ]
+                };
+            },
+            computed: {
+                allSlides() {
+                    const slides = [];
+                    this.projects.forEach((project) => {
+                        // Ajouter le slide du projet
+                        slides.push({
+                            type: 'project',
+                            data: project
+                        });
+                        
+                        // Ajouter tous les visuels du projet
+                        project.visuals.forEach((visual, index) => {
+                            slides.push({
+                                type: 'image',
+                                data: {
+                                    src: visual,
+                                    alt: `${project.title} - Visual ${index + 1}`
+                                }
+                            });
+                        });
+                    });
+                    return slides;
+                },
+                totalSlides() {
+                    return 1 + this.allSlides.length + 2; // Home + Slides dynamiques + Projets Divers + Services
+                },
+                servicesSlideIndex() {
+                    return 1 + this.allSlides.length; // Position du slide projets divers
+                }
+            },
+            methods: {
+                nextSlide() {
+                    if (this.currentSlide < this.totalSlides - 1) {
+                        this.currentSlide++;
+                    }
+                },
+                prevSlide() {
+                    if (this.currentSlide > 0) {
+                        this.currentSlide--;
+                    }
+                },
+                goToSlide(index) {
+                    this.currentSlide = index;
+                }
+            },
+            mounted() {
+                // Navigation clavier
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    }
+                });
+                
+                // S'assurer que le document peut recevoir le focus
+                document.body.setAttribute('tabindex', '0');
+                document.body.focus();
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
