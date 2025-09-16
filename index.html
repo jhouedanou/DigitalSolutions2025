@@ -17,11 +17,16 @@
             background: #000;
             color: #fff;
             overflow-x: hidden;
+            touch-action: pan-y pinch-zoom;
+            -webkit-overflow-scrolling: touch;
         }
 
         .presentation-container {
             min-height: 100vh;
             position: relative;
+            touch-action: pan-x pan-y;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .slide {
@@ -190,13 +195,6 @@
             will-change: opacity;
         }
 
-        .slide-image[loading="lazy"] {
-            opacity: 0;
-        }
-
-        .slide-image[loading="lazy"].loaded {
-            opacity: 1;
-        }
 
         /* Services Slide */
         .services-slide {
@@ -439,7 +437,6 @@
                     <img :src="slide.data.src" 
                          :alt="slide.data.alt" 
                          class="slide-image"
-                         loading="lazy"
                          decoding="async">
                 </div>
             </div>
@@ -637,6 +634,69 @@
                         this.prevSlide();
                     }
                 });
+
+                // Support tactile pour iOS/Android
+                let startX = null;
+                let startY = null;
+                const minSwipeDistance = 50;
+
+                document.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    if (!startX || !startY) return;
+
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const deltaX = startX - endX;
+                    const deltaY = startY - endY;
+
+                    // Vérifier que c'est un swipe horizontal (pas vertical)
+                    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+                        if (deltaX > 0) {
+                            // Swipe vers la gauche = slide suivante
+                            this.nextSlide();
+                        } else {
+                            // Swipe vers la droite = slide précédente
+                            this.prevSlide();
+                        }
+                    }
+
+                    startX = null;
+                    startY = null;
+                }, { passive: true });
+
+                // Support trackpad/souris pour desktop
+                let isScrolling = false;
+                document.addEventListener('wheel', (e) => {
+                    if (isScrolling) return;
+                    
+                    e.preventDefault();
+                    isScrolling = true;
+                    
+                    // Délai pour éviter les scrolls multiples rapides
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 500);
+
+                    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                        // Scroll horizontal (trackpad)
+                        if (e.deltaX > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    } else if (Math.abs(e.deltaY) > 50) {
+                        // Scroll vertical
+                        if (e.deltaY > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    }
+                }, { passive: false });
                 
                 // S'assurer que le document peut recevoir le focus
                 document.body.setAttribute('tabindex', '0');
